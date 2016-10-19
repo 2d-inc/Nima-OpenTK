@@ -32,6 +32,7 @@ namespace Nima.OpenGL
         }
         
         ShaderProgram m_TexturedShader;
+        ShaderProgram m_TexturedSkinShader;
         Matrix4 m_Projection;
         Matrix4 m_Transform;
         Matrix4 m_ViewTransform;
@@ -68,6 +69,23 @@ namespace Nima.OpenGL
                     "TextureSampler",
                     "Opacity",
                     "Color"
+                });
+
+            m_TexturedSkinShader = InitProgram("Nima-OpenTK/Shaders/TexturedSkin.vs", "Nima-OpenTK/Shaders/Textured.fs", 
+                new ShaderAttribute[] {
+                    new ShaderAttribute("VertexPosition", 2, 12, 0),
+                    new ShaderAttribute("VertexTexCoord", 2, 12, 8),
+                    new ShaderAttribute("VertexBoneIndices", 4, 12, 16),
+                    new ShaderAttribute("VertexWeights", 4, 12, 32)
+                },
+                new string[] {
+                    "ProjectionMatrix",
+                    "ViewMatrix",
+                    "WorldMatrix",
+                    "TextureSampler",
+                    "Opacity",
+                    "Color",
+                    "BoneMatrices"
                 });
         }
 
@@ -149,7 +167,41 @@ namespace Nima.OpenGL
 
             GL.BindBuffer(BufferTarget.ElementArrayBuffer, indexBuffer.Id);
             GL.DrawElements(BeginMode.Triangles, indexBuffer.Size, DrawElementsType.UnsignedShort, 0);
-            //Console.WriteLine("TEST " + vertexBuffer.Id + " " + indexBuffer.Id + " " + indexBuffer.Size + " " + m_Projection[0,0]);
+        }
+
+        public void DrawTexturedSkin(float[] view, float[] transform, VertexBuffer vertexBuffer, IndexBuffer indexBuffer, float[] boneMatrices, float opacity, Color4 color, Texture texture)
+        {
+            m_ViewTransform[0,0] = view[0];
+            m_ViewTransform[1,0] = view[1];
+            m_ViewTransform[0,1] = view[2];
+            m_ViewTransform[1,1] = view[3];
+            m_ViewTransform[0,3] = view[4];
+            m_ViewTransform[1,3] = view[5];
+
+            m_Transform[0,0] = transform[0];
+            m_Transform[1,0] = transform[1];
+            m_Transform[0,1] = transform[2];
+            m_Transform[1,1] = transform[3];
+            m_Transform[0,3] = transform[4];
+            m_Transform[1,3] = transform[5];
+
+            Bind(m_TexturedSkinShader, vertexBuffer);
+
+            int[] u = m_TexturedSkinShader.Uniforms;
+            GL.UniformMatrix4(u[0], false, ref m_Projection);
+            GL.UniformMatrix4(u[1], false, ref m_ViewTransform);
+            GL.UniformMatrix4(u[2], false, ref m_Transform);
+
+            GL.ActiveTexture(TextureUnit.Texture0);
+            GL.BindTexture(TextureTarget.Texture2D, texture.Id);
+            GL.Uniform1(u[3], 0);
+
+            GL.Uniform1(u[4], opacity);
+            GL.Uniform4(u[5], color);
+            GL.Uniform3(u[6], boneMatrices.Length, boneMatrices);
+
+            GL.BindBuffer(BufferTarget.ElementArrayBuffer, indexBuffer.Id);
+            GL.DrawElements(BeginMode.Triangles, indexBuffer.Size, DrawElementsType.UnsignedShort, 0);
         }
     }
 }
