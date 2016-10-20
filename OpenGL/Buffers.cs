@@ -32,7 +32,7 @@ namespace Nima.OpenGL
             public void SetData(ushort[] data)
             {
                 GL.BindBuffer(BufferTarget.ElementArrayBuffer, m_Id);
-                GL.BufferData<ushort>(BufferTarget.ElementArrayBuffer, sizeof(ushort) * data.Length, data, BufferUsage.StaticDraw);
+                GL.BufferData<ushort>(BufferTarget.ElementArrayBuffer, sizeof(ushort) * data.Length, data, BufferUsageHint.StaticDraw);
                 m_Size = data.Length;
             }
 
@@ -50,7 +50,7 @@ namespace Nima.OpenGL
             public void SetData(float[] data)
             {
                 GL.BindBuffer(BufferTarget.ArrayBuffer, m_Id);
-                GL.BufferData<float>(BufferTarget.ArrayBuffer, sizeof(float) * data.Length, data, BufferUsage.StaticDraw);
+                GL.BufferData<float>(BufferTarget.ArrayBuffer, sizeof(float) * data.Length, data, BufferUsageHint.StaticDraw);
             }
         }
 }
