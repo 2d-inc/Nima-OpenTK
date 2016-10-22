@@ -45,7 +45,7 @@ namespace Nima.OpenGL
 				GL.BindTexture(TextureTarget.Texture2D, m_Id);
 				GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMagFilter, (int)All.Linear);
 				GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMinFilter, (int)All.Linear);
-				GL.TexImage2D<byte>(TextureTarget.Texture2D, 0, PixelInternalFormat.Rgba, reader.ImgInfo.Cols, reader.ImgInfo.Rows, 0, PixelFormat.Rgba, PixelType.UnsignedByte, data);
+				GL.TexImage2D<byte>(TextureTarget2d.Texture2D, 0, TextureComponentCount.Rgba, reader.ImgInfo.Cols, reader.ImgInfo.Rows, 0, PixelFormat.Rgba, PixelType.UnsignedByte, data);
 				GL.BindTexture(TextureTarget.Texture2D, 0);
 			}
 		}

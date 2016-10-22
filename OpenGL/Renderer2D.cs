@@ -150,14 +150,39 @@ namespace Nima.OpenGL
             m_Transform[1,1] = transform[3];
             m_Transform[0,3] = transform[4];
             m_Transform[1,3] = transform[5];
+/*
+            float[] xform = new float[16];
+            xform[0] = 1;
+            xform[1] = 0;
+            xform[2] = 0;
+            xform[3] = 0;
+            xform[4] = 0;
+            xform[5] = 1;
+            xform[6] = 0;
+            xform[7] = 0;
+            xform[8] = 0;
+            xform[9] = 0;
+            xform[10] = 1;
+            xform[11] = 0;
+            xform[12] = 0;
+            xform[13] = 0;
+            xform[14] = 0;
+            xform[15] = 1;
+            xform[0] = transform[0];
+			xform[1] = transform[1];
+			xform[4] = transform[2];
+			xform[5] = transform[3];
+			xform[12] = transform[4];
+			xform[13] = transform[5];*/
 
             Bind(m_TexturedShader, vertexBuffer);
 
             int[] u = m_TexturedShader.Uniforms;
-            GL.UniformMatrix4(u[0], false, ref m_Projection);
-            GL.UniformMatrix4(u[1], false, ref m_ViewTransform);
-            GL.UniformMatrix4(u[2], false, ref m_Transform);
-
+            GL.UniformMatrix4(u[0], true, ref m_Projection);
+            GL.UniformMatrix4(u[1], true, ref m_ViewTransform);
+            GL.UniformMatrix4(u[2], true, ref m_Transform);
+            //GL.UniformMatrix4(u[2], 1, false, xform);
+            
             GL.ActiveTexture(TextureUnit.Texture0);
             GL.BindTexture(TextureTarget.Texture2D, texture.Id);
             GL.Uniform1(u[3], 0);
@@ -188,9 +213,9 @@ namespace Nima.OpenGL
             Bind(m_TexturedSkinShader, vertexBuffer);
 
             int[] u = m_TexturedSkinShader.Uniforms;
-            GL.UniformMatrix4(u[0], false, ref m_Projection);
-            GL.UniformMatrix4(u[1], false, ref m_ViewTransform);
-            GL.UniformMatrix4(u[2], false, ref m_Transform);
+            GL.UniformMatrix4(u[0], true, ref m_Projection);
+            GL.UniformMatrix4(u[1], true, ref m_ViewTransform);
+            GL.UniformMatrix4(u[2], true, ref m_Transform);
 
             GL.ActiveTexture(TextureUnit.Texture0);
             GL.BindTexture(TextureTarget.Texture2D, texture.Id);

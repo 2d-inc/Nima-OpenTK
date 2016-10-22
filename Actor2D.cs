@@ -153,8 +153,9 @@ namespace Nima
 			{
 				if(img.TriangleCount > 0)
 				{
-					m_RenderData[idx++] = new ActorImageRenderData(textures[img.TextureIndex], img);
+					m_RenderData[idx] = new ActorImageRenderData(textures[img.TextureIndex], img);
 				}
+				idx++;
 			}
 		}
 
@@ -197,7 +198,7 @@ namespace Nima
 				return x.Node.DrawOrder.CompareTo(y.Node.DrawOrder);
 			}
 		}
-		DrawNodeComprarer m_DrawNodeComparer = new DrawNodeComprarer();
+		static DrawNodeComprarer m_DrawNodeComparer = new DrawNodeComprarer();
 
 		public ActorInstance2D(Actor2D actor2D) : base(actor2D.BaseData)
 		{
