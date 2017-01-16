@@ -137,7 +137,7 @@ namespace Nima
 			for(int i = 0; i < actor.TexturesUsed; i++)
 			{
 				string atlasFilename;
-				if(actor.TexturesUsed == 0)
+				if(actor.TexturesUsed == 1)
 				{
 					atlasFilename = baseFileName + ".png";
 				}
