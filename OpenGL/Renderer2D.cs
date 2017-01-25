@@ -18,7 +18,7 @@ namespace Nima.OpenGL
             },
 			{
                 "Nima-OpenTK/Shaders/Textured.fs", 
-                "#ifdef GL_ES \nprecision highp float;\n #endif\n uniform vec4 Color; uniform float Opacity; uniform sampler2D TextureSampler; varying vec2 TexCoord; void main(void) {vec4 color = texture2D(TextureSampler, TexCoord) * Color; color.a *= Opacity; gl_FragColor = color; }" 
+                "#ifdef GL_ES \nprecision highp float;\n #endif\n uniform vec4 Color; uniform float Opacity; uniform sampler2D TextureSampler; varying vec2 TexCoord; void main(void) {vec4 color = texture2D(TextureSampler, TexCoord) * Color; color *= Opacity; gl_FragColor = color; }" 
             },
 			{
                 "Nima-OpenTK/Shaders/TexturedSkin.vs", 
@@ -33,6 +33,8 @@ namespace Nima.OpenGL
         
         ShaderProgram m_TexturedShader;
         ShaderProgram m_TexturedSkinShader;
+        ShaderProgram m_DeformedTexturedShader;
+        ShaderProgram m_DeformedTexturedSkinShader;
         Matrix4 m_Projection;
         Matrix4 m_Transform;
         Matrix4 m_ViewTransform;
@@ -71,14 +73,54 @@ namespace Nima.OpenGL
                     "Color"
                 });
 
-            m_TexturedSkinShader = InitProgram("Nima-OpenTK/Shaders/TexturedSkin.vs", "Nima-OpenTK/Shaders/Textured.fs", 
+             m_DeformedTexturedShader = InitProgram("Nima-OpenTK/Shaders/Textured.vs", "Nima-OpenTK/Shaders/Textured.fs", 
                 new ShaderAttribute[] {
+                    new ShaderAttribute("VertexPosition", 2, 2, 0)
+                },
+                new ShaderAttribute[] {
+                    new ShaderAttribute("VertexTexCoord", 2, 4, 8)
+                },
+                new string[] {
+                    "ProjectionMatrix",
+                    "ViewMatrix",
+                    "WorldMatrix",
+                    "TextureSampler",
+                    "Opacity",
+                    "Color"
+                });
+
+            m_TexturedSkinShader = InitProgram("Nima-OpenTK/Shaders/TexturedSkin.vs", "Nima-OpenTK/Shaders/Textured.fs", 
+                new ShaderAttribute[] 
+                {
                     new ShaderAttribute("VertexPosition", 2, 12, 0),
                     new ShaderAttribute("VertexTexCoord", 2, 12, 8),
                     new ShaderAttribute("VertexBoneIndices", 4, 12, 16),
                     new ShaderAttribute("VertexWeights", 4, 12, 32)
                 },
-                new string[] {
+                new string[] 
+                {
+                    "ProjectionMatrix",
+                    "ViewMatrix",
+                    "WorldMatrix",
+                    "TextureSampler",
+                    "Opacity",
+                    "Color",
+                    "BoneMatrices"
+                });
+
+            m_DeformedTexturedSkinShader = InitProgram("Nima-OpenTK/Shaders/TexturedSkin.vs", "Nima-OpenTK/Shaders/Textured.fs", 
+                new ShaderAttribute[] 
+                {
+                    new ShaderAttribute("VertexPosition", 2, 2, 0),
+                },
+                new ShaderAttribute[] 
+                {
+                    new ShaderAttribute("VertexTexCoord", 2, 12, 8),
+                    new ShaderAttribute("VertexBoneIndices", 4, 12, 16),
+                    new ShaderAttribute("VertexWeights", 4, 12, 32)
+                },
+                new string[] 
+                {
                     "ProjectionMatrix",
                     "ViewMatrix",
                     "WorldMatrix",
@@ -135,45 +177,24 @@ namespace Nima.OpenGL
             Matrix4.CreateOrthographic(width, height, 0, 1, out m_Projection);
         }
 
-        public void DrawTextured(float[] view, float[] transform, VertexBuffer vertexBuffer, IndexBuffer indexBuffer, float opacity, Color4 color, Texture texture)
+        public void SetView(float[] viewTransform)
         {
-            m_ViewTransform[0,0] = view[0];
-            m_ViewTransform[1,0] = view[1];
-            m_ViewTransform[0,1] = view[2];
-            m_ViewTransform[1,1] = view[3];
-            m_ViewTransform[0,3] = view[4];
-            m_ViewTransform[1,3] = view[5];
+            m_ViewTransform[0,0] = viewTransform[0];
+            m_ViewTransform[1,0] = viewTransform[1];
+            m_ViewTransform[0,1] = viewTransform[2];
+            m_ViewTransform[1,1] = viewTransform[3];
+            m_ViewTransform[0,3] = viewTransform[4];
+            m_ViewTransform[1,3] = viewTransform[5];
+        }
 
+        public void DrawTextured(float[] transform, VertexBuffer vertexBuffer, IndexBuffer indexBuffer, int offset, int indexCount, float opacity, Color4 color, Texture texture)
+        {
             m_Transform[0,0] = transform[0];
             m_Transform[1,0] = transform[1];
             m_Transform[0,1] = transform[2];
             m_Transform[1,1] = transform[3];
             m_Transform[0,3] = transform[4];
             m_Transform[1,3] = transform[5];
-/*
-            float[] xform = new float[16];
-            xform[0] = 1;
-            xform[1] = 0;
-            xform[2] = 0;
-            xform[3] = 0;
-            xform[4] = 0;
-            xform[5] = 1;
-            xform[6] = 0;
-            xform[7] = 0;
-            xform[8] = 0;
-            xform[9] = 0;
-            xform[10] = 1;
-            xform[11] = 0;
-            xform[12] = 0;
-            xform[13] = 0;
-            xform[14] = 0;
-            xform[15] = 1;
-            xform[0] = transform[0];
-			xform[1] = transform[1];
-			xform[4] = transform[2];
-			xform[5] = transform[3];
-			xform[12] = transform[4];
-			xform[13] = transform[5];*/
 
             Bind(m_TexturedShader, vertexBuffer);
 
@@ -181,7 +202,6 @@ namespace Nima.OpenGL
             GL.UniformMatrix4(u[0], true, ref m_Projection);
             GL.UniformMatrix4(u[1], true, ref m_ViewTransform);
             GL.UniformMatrix4(u[2], true, ref m_Transform);
-            //GL.UniformMatrix4(u[2], 1, false, xform);
             
             GL.ActiveTexture(TextureUnit.Texture0);
             GL.BindTexture(TextureTarget.Texture2D, texture.Id);
@@ -191,18 +211,38 @@ namespace Nima.OpenGL
             GL.Uniform4(u[5], color);
 
             GL.BindBuffer(BufferTarget.ElementArrayBuffer, indexBuffer.Id);
-            GL.DrawElements(BeginMode.Triangles, indexBuffer.Size, DrawElementsType.UnsignedShort, 0);
+            GL.DrawElements(BeginMode.Triangles, indexCount, DrawElementsType.UnsignedShort, offset*2);
         }
 
-        public void DrawTexturedSkin(float[] view, float[] transform, VertexBuffer vertexBuffer, IndexBuffer indexBuffer, float[] boneMatrices, float opacity, Color4 color, Texture texture)
+        public void DrawTexturedAndDeformed(float[] transform, VertexBuffer deformBuffer, VertexBuffer vertexBuffer, IndexBuffer indexBuffer, int offset, int indexCount, float opacity, Color4 color, Texture texture)
         {
-            m_ViewTransform[0,0] = view[0];
-            m_ViewTransform[1,0] = view[1];
-            m_ViewTransform[0,1] = view[2];
-            m_ViewTransform[1,1] = view[3];
-            m_ViewTransform[0,3] = view[4];
-            m_ViewTransform[1,3] = view[5];
+            m_Transform[0,0] = transform[0];
+            m_Transform[1,0] = transform[1];
+            m_Transform[0,1] = transform[2];
+            m_Transform[1,1] = transform[3];
+            m_Transform[0,3] = transform[4];
+            m_Transform[1,3] = transform[5];
 
+            Bind(m_TexturedShader, deformBuffer, vertexBuffer);
+
+            int[] u = m_TexturedShader.Uniforms;
+            GL.UniformMatrix4(u[0], true, ref m_Projection);
+            GL.UniformMatrix4(u[1], true, ref m_ViewTransform);
+            GL.UniformMatrix4(u[2], true, ref m_Transform);
+            
+            GL.ActiveTexture(TextureUnit.Texture0);
+            GL.BindTexture(TextureTarget.Texture2D, texture.Id);
+            GL.Uniform1(u[3], 0);
+
+            GL.Uniform1(u[4], opacity);
+            GL.Uniform4(u[5], color);
+
+            GL.BindBuffer(BufferTarget.ElementArrayBuffer, indexBuffer.Id);
+            GL.DrawElements(BeginMode.Triangles, indexCount, DrawElementsType.UnsignedShort, offset*2);
+        }
+
+        public void DrawTexturedSkin(float[] transform, VertexBuffer vertexBuffer, IndexBuffer indexBuffer, int offset, int indexCount, float[] boneMatrices, float opacity, Color4 color, Texture texture)
+        {
             m_Transform[0,0] = transform[0];
             m_Transform[1,0] = transform[1];
             m_Transform[0,1] = transform[2];
@@ -226,7 +266,35 @@ namespace Nima.OpenGL
             GL.Uniform3(u[6], boneMatrices.Length, boneMatrices);
 
             GL.BindBuffer(BufferTarget.ElementArrayBuffer, indexBuffer.Id);
-            GL.DrawElements(BeginMode.Triangles, indexBuffer.Size, DrawElementsType.UnsignedShort, 0);
+            GL.DrawElements(BeginMode.Triangles, indexCount, DrawElementsType.UnsignedShort, offset*2);
+        }
+
+        public void DrawTexturedAndDeformedSkin(float[] transform, VertexBuffer deformBuffer, VertexBuffer vertexBuffer, IndexBuffer indexBuffer, int offset, int indexCount, float[] boneMatrices, float opacity, Color4 color, Texture texture)
+        {
+            m_Transform[0,0] = transform[0];
+            m_Transform[1,0] = transform[1];
+            m_Transform[0,1] = transform[2];
+            m_Transform[1,1] = transform[3];
+            m_Transform[0,3] = transform[4];
+            m_Transform[1,3] = transform[5];
+
+            Bind(m_TexturedSkinShader, deformBuffer, vertexBuffer);
+
+            int[] u = m_TexturedSkinShader.Uniforms;
+            GL.UniformMatrix4(u[0], true, ref m_Projection);
+            GL.UniformMatrix4(u[1], true, ref m_ViewTransform);
+            GL.UniformMatrix4(u[2], true, ref m_Transform);
+
+            GL.ActiveTexture(TextureUnit.Texture0);
+            GL.BindTexture(TextureTarget.Texture2D, texture.Id);
+            GL.Uniform1(u[3], 0);
+
+            GL.Uniform1(u[4], opacity);
+            GL.Uniform4(u[5], color);
+            GL.Uniform3(u[6], boneMatrices.Length, boneMatrices);
+
+            GL.BindBuffer(BufferTarget.ElementArrayBuffer, indexBuffer.Id);
+            GL.DrawElements(BeginMode.Triangles, indexCount, DrawElementsType.UnsignedShort, offset*2);
         }
     }
 }

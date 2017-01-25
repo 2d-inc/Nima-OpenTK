@@ -37,9 +37,7 @@ namespace Nima.OpenGL
 						data[widx++] = B;
 						data[widx++] = A;
 					}
-					//Console.WriteLine("ELEMENTS PER ROW " + line.ElementsPerRow + " " + line.ScanlineB.Length); // should be 4 * width
 				}
-				// Console.WriteLine("DECODED IT " + reader.ImgInfo.Cols + " " + reader.ImgInfo.Rows);
 
 				m_Id = GL.GenTexture();
 				GL.BindTexture(TextureTarget.Texture2D, m_Id);
