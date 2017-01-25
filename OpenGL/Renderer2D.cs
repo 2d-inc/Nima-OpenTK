@@ -223,9 +223,9 @@ namespace Nima.OpenGL
             m_Transform[0,3] = transform[4];
             m_Transform[1,3] = transform[5];
 
-            Bind(m_TexturedShader, deformBuffer, vertexBuffer);
+            Bind(m_DeformedTexturedShader, deformBuffer, vertexBuffer);
 
-            int[] u = m_TexturedShader.Uniforms;
+            int[] u = m_DeformedTexturedShader.Uniforms;
             GL.UniformMatrix4(u[0], true, ref m_Projection);
             GL.UniformMatrix4(u[1], true, ref m_ViewTransform);
             GL.UniformMatrix4(u[2], true, ref m_Transform);
@@ -238,7 +238,7 @@ namespace Nima.OpenGL
             GL.Uniform4(u[5], color);
 
             GL.BindBuffer(BufferTarget.ElementArrayBuffer, indexBuffer.Id);
-            GL.DrawElements(BeginMode.Triangles, indexCount, DrawElementsType.UnsignedShort, offset*2);
+            GL.DrawElements(BeginMode.Triangles, indexCount, DrawElementsType.UnsignedShort, offset*2); // <-- offset is in bytes...
         }
 
         public void DrawTexturedSkin(float[] transform, VertexBuffer vertexBuffer, IndexBuffer indexBuffer, int offset, int indexCount, float[] boneMatrices, float opacity, Color4 color, Texture texture)
@@ -278,9 +278,9 @@ namespace Nima.OpenGL
             m_Transform[0,3] = transform[4];
             m_Transform[1,3] = transform[5];
 
-            Bind(m_TexturedSkinShader, deformBuffer, vertexBuffer);
+            Bind(m_DeformedTexturedSkinShader, deformBuffer, vertexBuffer);
 
-            int[] u = m_TexturedSkinShader.Uniforms;
+            int[] u = m_DeformedTexturedSkinShader.Uniforms;
             GL.UniformMatrix4(u[0], true, ref m_Projection);
             GL.UniformMatrix4(u[1], true, ref m_ViewTransform);
             GL.UniformMatrix4(u[2], true, ref m_Transform);
