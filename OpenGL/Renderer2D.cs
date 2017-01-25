@@ -177,7 +177,7 @@ namespace Nima.OpenGL
             Matrix4.CreateOrthographic(width, height, 0, 1, out m_Projection);
         }
 
-        public void SetView(float[] viewTransform)
+        public void SetView(Mat2D viewTransform)
         {
             m_ViewTransform[0,0] = viewTransform[0];
             m_ViewTransform[1,0] = viewTransform[1];
@@ -187,7 +187,7 @@ namespace Nima.OpenGL
             m_ViewTransform[1,3] = viewTransform[5];
         }
 
-        public void DrawTextured(float[] transform, VertexBuffer vertexBuffer, IndexBuffer indexBuffer, int offset, int indexCount, float opacity, Color4 color, Texture texture)
+        public void DrawTextured(Mat2D transform, VertexBuffer vertexBuffer, IndexBuffer indexBuffer, int offset, int indexCount, float opacity, Color4 color, Texture texture)
         {
             m_Transform[0,0] = transform[0];
             m_Transform[1,0] = transform[1];
@@ -214,7 +214,7 @@ namespace Nima.OpenGL
             GL.DrawElements(BeginMode.Triangles, indexCount, DrawElementsType.UnsignedShort, offset*2);
         }
 
-        public void DrawTexturedAndDeformed(float[] transform, VertexBuffer deformBuffer, VertexBuffer vertexBuffer, IndexBuffer indexBuffer, int offset, int indexCount, float opacity, Color4 color, Texture texture)
+        public void DrawTexturedAndDeformed(Mat2D transform, VertexBuffer deformBuffer, VertexBuffer vertexBuffer, IndexBuffer indexBuffer, int offset, int indexCount, float opacity, Color4 color, Texture texture)
         {
             m_Transform[0,0] = transform[0];
             m_Transform[1,0] = transform[1];
@@ -241,7 +241,7 @@ namespace Nima.OpenGL
             GL.DrawElements(BeginMode.Triangles, indexCount, DrawElementsType.UnsignedShort, offset*2); // <-- offset is in bytes...
         }
 
-        public void DrawTexturedSkin(float[] transform, VertexBuffer vertexBuffer, IndexBuffer indexBuffer, int offset, int indexCount, float[] boneMatrices, float opacity, Color4 color, Texture texture)
+        public void DrawTexturedSkin(Mat2D transform, VertexBuffer vertexBuffer, IndexBuffer indexBuffer, int offset, int indexCount, float[] boneMatrices, float opacity, Color4 color, Texture texture)
         {
             m_Transform[0,0] = transform[0];
             m_Transform[1,0] = transform[1];
@@ -269,7 +269,7 @@ namespace Nima.OpenGL
             GL.DrawElements(BeginMode.Triangles, indexCount, DrawElementsType.UnsignedShort, offset*2);
         }
 
-        public void DrawTexturedAndDeformedSkin(float[] transform, VertexBuffer deformBuffer, VertexBuffer vertexBuffer, IndexBuffer indexBuffer, int offset, int indexCount, float[] boneMatrices, float opacity, Color4 color, Texture texture)
+        public void DrawTexturedAndDeformedSkin(Mat2D transform, VertexBuffer deformBuffer, VertexBuffer vertexBuffer, IndexBuffer indexBuffer, int offset, int indexCount, float[] boneMatrices, float opacity, Color4 color, Texture texture)
         {
             m_Transform[0,0] = transform[0];
             m_Transform[1,0] = transform[1];
