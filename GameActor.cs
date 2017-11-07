@@ -28,7 +28,7 @@ namespace Nima
 
 		public void Render(GameActorInstance gameActorInstance, Renderer2D renderer)
 		{
-			if(TextureIndex < 0 || RenderOpacity <= 0.0f)
+			if(TextureIndex < 0 || RenderOpacity <= 0.0f || RenderCollapsed)
 			{
 				return;
 			}
