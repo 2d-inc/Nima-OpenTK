@@ -15,4 +15,4 @@ Take a look at https://github.com/2d-inc/Nima-OpenTK-Testing for an example impl
 5. Submit a pull request.
 
 ## License
-Hold please...
+See the [LICENSE](LICENSE) file for license rights and limitations (MIT).
