@@ -2,7 +2,7 @@
 Nima OpenTK Runtime Library
 
 ## Building
-This has been build and tested with dotnet core in the Nima-OpenTK-Testing project. It should work elsewhere with minor changes. Please contribute seperate project files if you are interested in them!
+This has been build and tested with dotnet core in the Nima-OpenTK-Testing project. It should work elsewhere with minor changes. Please contribute separate project files if you are interested in them!
 
 ## Usage
 Take a look at https://github.com/2d-inc/Nima-OpenTK-Testing for an example implementation.
